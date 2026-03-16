@@ -42,7 +42,7 @@ TICKERS = [
     "TSN", "CAT", "DE", "PCAR", "GWW", "FAST", "GPC", "LKQ",
 ]
 
-FRED_API_KEY = "8799cbbb3b6d618fdc00c495fda28939"
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "8799cbbb3b6d618fdc00c495fda28939")
 
 SEC_TICKER_MAP_URLS = [
     "https://www.sec.gov/files/company_tickers.json",
@@ -553,12 +553,12 @@ def collect_yfinance_data(
         entry_prices.append(ep)
 
         ep_future = close_after_n_bdays(tkr, ad, 252)
-        ret = (ep_future / ep - 1) if (ep and ep_future and ep != 0) else np.nan
+        ret = (ep_future / ep - 1) if (pd.notna(ep) and pd.notna(ep_future) and ep != 0) else np.nan
         returns_12m.append(ret)
 
         spy0 = first_close_on_or_after("SPY", ad)
         spy1 = close_after_n_bdays("SPY", ad, 252)
-        br = (spy1 / spy0 - 1) if (spy0 and spy1 and spy0 != 0) else np.nan
+        br = (spy1 / spy0 - 1) if (pd.notna(spy0) and pd.notna(spy1) and spy0 != 0) else np.nan
         bench_12m.append(br)
 
     df["EntryPrice"] = entry_prices
